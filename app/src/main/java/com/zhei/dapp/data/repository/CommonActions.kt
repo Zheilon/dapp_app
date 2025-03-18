@@ -29,4 +29,21 @@ open class CommonActions : ICommonActions {
     }
 
 
+    override fun getParticularExpression(list: List<Char>, indexDivide: Int): String
+    {
+        println("<------------------------------->")
+        var c = ""
+        list.forEachIndexed { index, item ->
+            if (index < indexDivide) {
+                c += item
+            }
+        }
+        println("List Arrived: $list")
+        println("Chars Cut: $c")
+        println("Cut Factor: $indexDivide")
+        println("<------------------------------->")
+        return c
+    }
+
+
 }

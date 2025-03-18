@@ -8,4 +8,6 @@ interface ICommonActions {
 
     fun lastCharSeparators(symbolInit: Char, symbolFinal: Char, content: String): Char
 
+    fun getParticularExpression(list: List<Char>, indexDivide: Int): String
+
 }

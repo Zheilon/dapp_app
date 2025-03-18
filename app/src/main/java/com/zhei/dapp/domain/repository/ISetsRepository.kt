@@ -33,8 +33,6 @@ interface ISetsRepository {
 
     fun getSpecialCharacters (expression: String) : List<Char>
 
-    fun getParticularExpression (list: List<Char>, indexDivide: Int) : String
-
     fun simpleIter (iterable: String) : List<String>
 
 }

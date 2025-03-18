@@ -13,6 +13,10 @@ interface ITablesRepository {
 
     fun biconditional (a: Any, b: Any) : Int
 
+    fun negation (z: Any) : Int
+
+    fun comparatorToDo (entity: TablesEntity, oldList: List<Int> = emptyList(), currentList: List<Int> = emptyList(), toDo: String) : List<Int>
+
     fun getQuantityVars (expression: String) : Int
 
     fun getSizeWithSquare (expression: String) : Int

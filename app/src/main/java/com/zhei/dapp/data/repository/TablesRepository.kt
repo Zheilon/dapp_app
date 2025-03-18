@@ -8,6 +8,7 @@ import com.zhei.dapp.Utils
 import com.zhei.dapp.data.models.TablesEntity
 import com.zhei.dapp.data.models.TablesIterSaver
 import com.zhei.dapp.domain.repository.ITablesRepository
+import java.util.Collections
 import kotlin.math.exp
 
 class TablesRepository : ITablesRepository, CommonActions() {
@@ -34,6 +35,12 @@ class TablesRepository : ITablesRepository, CommonActions() {
     override fun biconditional(a: Any, b: Any): Int
     {
         return if (a == b) 1 else 0
+    }
+
+
+    override fun negation(z: Any): Int
+    {
+        return if (z == 1) 0 else 1
     }
 
 
@@ -77,6 +84,44 @@ class TablesRepository : ITablesRepository, CommonActions() {
     }
 
 
+    override fun comparatorToDo (
+        entity: TablesEntity,
+        oldList: List<Int>,
+        currentList: List<Int>,
+        toDo: String
+    ) : List<Int>
+    {
+        return when (toDo) {
+            NEGACION ->
+                entity.listVar.map {
+                    negation(it)
+                }
+
+            CONJUNCION ->
+                oldList.zip(currentList) { old, current ->
+                    conjunction(old, current)
+                }
+
+            DISYUNCION ->
+                oldList.zip(currentList) { old, current ->
+                    disjunction(old, current)
+                }
+
+            CONDICIONAL ->
+                oldList.zip(currentList) { old, current ->
+                    conditional(old, current)
+                }
+
+            BICONDICIONAL ->
+                oldList.zip(currentList) { old, current ->
+                    biconditional(old, current)
+                }
+
+            else -> emptyList()
+        }
+    }
+
+
     override fun generateTableStart(expression: String): List<TablesEntity>
     {
         val quatityVars = getQuantityVars(expression)
@@ -86,6 +131,7 @@ class TablesRepository : ITablesRepository, CommonActions() {
         println("Scale = $getSize")
 
         val alphabetOrder = extractVarsAlphabetOrder(expression)
+        println()
 
         val general = mutableListOf<TablesEntity>()
         var less = 0
@@ -144,12 +190,128 @@ class TablesRepository : ITablesRepository, CommonActions() {
         val specialChars = getSpecialChars(expression)
         println("Specials: $specialChars")
 
-        val iterExpression = expression.map { it.toString() }
+        var iterExpression = expression.map { it }
         println("Itered: $iterExpression")
 
-        specialChars
+        var copyIter = expression.map { it }
+        println("${copyIter.size}")
 
-        return listOf(TablesIterSaver())
+        val tableStarting = generateTableStart(expression).toMutableList()
+
+        val new = tableStarting[0]
+
+        tableStarting[0] = tableStarting[tableStarting.size - 1]
+
+        tableStarting[tableStarting.size - 1] = new
+
+        val listLazilyExpressions = mutableListOf<TablesIterSaver>()
+
+        var finalResponse = TablesEntity()
+
+        specialChars.forEach { _ ->
+            iterExpression.forEach { _ ->
+                if (iterExpression.isNotEmpty()) {
+                    val cuteFactor = if (iterExpression.size % 2 == 0) 2 else 3
+                    listLazilyExpressions.add(
+                        TablesIterSaver(
+                            expression = getParticularExpression(list = iterExpression, cuteFactor)
+                        )
+                    )
+                    iterExpression = iterExpression.drop(cuteFactor)
+                }
+            }
+        }
+
+        listLazilyExpressions.forEachIndexed { index, item ->
+            /*Remover valores para actualizar size.*/
+            val cuteFactor = if (iterExpression.size % 2 == 0) 2 else 3
+
+            if (copyIter.size % 2 == 0) {
+                val iteratedValues = item.expression.map { it.toString() }
+                val first = tableStarting.filter { it.variable == iteratedValues.last() }[0]
+
+                val lenToUse = tableStarting.size - 1 == listLazilyExpressions.size - 1
+                val entityToUse = if (lenToUse) first else tableStarting.last()
+                val textToUse = if (lenToUse) item.expression else "(${entityToUse.variable})${item.expression}"
+
+                when {
+                    item.expression.contains(NEGACION) ->
+                        tableStarting.add(
+                            TablesEntity(
+                                variable = textToUse,
+                                listVar = comparatorToDo(
+                                    entity = entityToUse,
+                                    toDo = NEGACION
+                                )
+                            )
+                        )
+
+                    item.expression.contains(CONJUNCION) ->
+                        tableStarting.add(
+                            TablesEntity(
+                                variable = textToUse,
+                                listVar = comparatorToDo(
+                                    entity = entityToUse,
+                                    oldList = first.listVar,
+                                    currentList = entityToUse.listVar,
+                                    toDo = CONJUNCION
+                                )
+                            )
+                        )
+
+                    item.expression.contains(DISYUNCION) ->
+                        tableStarting.add(
+                            TablesEntity(
+                                variable = textToUse,
+                                listVar = comparatorToDo(
+                                    entity = entityToUse,
+                                    oldList = first.listVar,
+                                    currentList = entityToUse.listVar,
+                                    toDo = DISYUNCION
+                                )
+                            )
+                        )
+
+                    item.expression.contains(CONDICIONAL) ->
+                        tableStarting.add(
+                            TablesEntity(
+                                variable = textToUse,
+                                listVar = comparatorToDo(
+                                    entity = entityToUse,
+                                    oldList = first.listVar,
+                                    currentList = entityToUse.listVar,
+                                    toDo = CONDICIONAL
+                                )
+                            )
+                        )
+
+                    item.expression.contains(BICONDICIONAL) ->
+                        tableStarting.add(
+                            TablesEntity(
+                                variable = textToUse,
+                                listVar = comparatorToDo(
+                                    entity = entityToUse,
+                                    oldList = first.listVar,
+                                    currentList = entityToUse.listVar,
+                                    toDo = BICONDICIONAL
+                                )
+                            )
+                        )
+                }
+
+            } else {
+
+                println("hola")
+            }
+
+            copyIter = copyIter.drop(cuteFactor)
+
+        }
+
+        println("\n<------------- Table ------------->\n$tableStarting\n")
+        println("<------------- Checker ------------->\n$listLazilyExpressions")
+
+        return listOf(TablesIterSaver("Nothing Bro!"))
     }
 
 

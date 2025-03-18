@@ -11,7 +11,7 @@ import com.zhei.dapp.data.models.SetsIterSaver
 import com.zhei.dapp.data.models.SetsResultsEntity
 import com.zhei.dapp.domain.repository.ISetsRepository
 
-class SetsRepository : ISetsRepository {
+class SetsRepository : ISetsRepository, CommonActions() {
 
     override fun getDecodeExpression(expression: String): List<Char>
     {
@@ -79,24 +79,6 @@ class SetsRepository : ISetsRepository {
     override fun simpleIter(iterable: String): List<String>
     {
         return iterable.map { it.toString() }
-    }
-
-
-    /*Esta función se prueba llamando la función rawPattern()*/
-    override fun getParticularExpression(list: List<Char>, indexDivide: Int): String
-    {
-        println("<------------------------------->")
-        var c = ""
-        list.forEachIndexed { index, item ->
-            if (index < indexDivide) {
-                c += item
-            }
-        }
-        println("List Arrived: $list")
-        println("Chars Cut: $c")
-        println("Cut Factor: $indexDivide")
-        println("<------------------------------->")
-        return c
     }
 
 

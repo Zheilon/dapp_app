@@ -1,4 +1,5 @@
 package com.zhei.dapp.data.repository
+import android.util.Log
 import com.zhei.dapp.COMPLEMENT
 import com.zhei.dapp.DIFERENCIA
 import com.zhei.dapp.INTERCCION
@@ -10,6 +11,7 @@ import com.zhei.dapp.data.models.SetsEntity
 import com.zhei.dapp.data.models.SetsIterSaver
 import com.zhei.dapp.data.models.SetsResultsEntity
 import com.zhei.dapp.domain.repository.ISetsRepository
+import kotlin.math.exp
 
 class SetsRepository : ISetsRepository {
 
@@ -39,7 +41,7 @@ class SetsRepository : ISetsRepository {
 
     override fun subSet(a: Set<Any>, b: Set<Any>): Set<Any>
     {
-        return if (a.containsAll(b)) b else setOf(VACIO)
+        return if (a.all { it in b }) a else setOf(VACIO)
     }
 
 
@@ -128,6 +130,35 @@ class SetsRepository : ISetsRepository {
     }
 
 
+    override fun isSet(expresion: String): Boolean
+    {
+        var bool = false
+
+        val filtered = expresion.filterNot {
+            it == '[' || it == ']' || it == '(' || it == ')' || it == '{' || it == '}'
+        }
+
+        filtered.forEachIndexed { index, item ->
+            if (index % 2 == 1 && expresion.length % 2 == 1) {
+
+                val charTrust = (item.toString() == UNION || item.toString() == INTERCCION ||
+                        item.toString() == DIFERENCIA || item.toString() == SUB_SET || item.toString() == COMPLEMENT)
+
+                val last = filtered.last()
+
+                val noSymbolsLast = (last.toString() != UNION || last.toString() != INTERCCION ||
+                        last.toString() != DIFERENCIA || last.toString() != SUB_SET || last.toString() != COMPLEMENT)
+
+                if (charTrust && noSymbolsLast) {
+                    bool = true
+                }
+            }
+        }
+
+        return bool
+    }
+
+
     /*
     * Función Importante de esta aplicación
     * Funcionamiento: Obtengo los caracteres especiales,
@@ -156,105 +187,108 @@ class SetsRepository : ISetsRepository {
 
         var finalSet = SetsIterSaver()
 
-        listSpecialChars.forEachIndexed { _, _ ->
-            iteredExpression.forEachIndexed { _, _ ->
-                val cuteFactor = if (iteredExpression.size % 2 == 0) 2 else 3
-                if (iteredExpression.isNotEmpty()) {
-                    listToSaveLazily.add(
-                        SetsIterSaver(
-                            oldExpression = getParticularExpression(iteredExpression, cuteFactor),
-                            resultSet =  setOf()
+        if (isSet(expression)) {
+            listSpecialChars.forEachIndexed { _, _ ->
+                iteredExpression.forEachIndexed { _, _ ->
+                    val cuteFactor = if (iteredExpression.size % 2 == 0) 2 else 3
+                    if (iteredExpression.isNotEmpty()) {
+                        listToSaveLazily.add(
+                            SetsIterSaver(
+                                oldExpression = getParticularExpression(iteredExpression, cuteFactor),
+                                resultSet =  setOf()
+                            )
                         )
-                    )
-                    iteredExpression = iteredExpression.drop(cuteFactor)
+                        iteredExpression = iteredExpression.drop(cuteFactor)
+                    }
                 }
             }
-        }
 
-        listToSaveLazily.forEachIndexed { index, item ->
-            println("index: $index")
+            listToSaveLazily.forEachIndexed { index, item ->
+                println("index: $index")
 
-            if (index == 0) {
-                val iterated = simpleIter(item.oldExpression)
-                println("iterated: $iterated")
+                if (index == 0) {
+                    val iterated = simpleIter(item.oldExpression)
+                    println("iterated: $iterated")
 
-                val first = entities.filter { it.keyName == iterated.first() }[0]
-                val second = entities.filter { it.keyName == iterated.last() }[0]
+                    val first = entities.filter { it.keyName == iterated.first() }[0].set.filter { it != "" }.toSet()
+                    val second = entities.filter { it.keyName == iterated.last() }[0].set.filter { it != "" }.toSet()
 
-                finalSet = when {
-                    item.oldExpression.contains(UNION) ->
-                        SetsIterSaver(
-                            oldExpression = item.oldExpression,
-                            resultSet = union(setOf(), setOf())
-                        )
 
-                    item.oldExpression.contains(INTERCCION) ->
-                        SetsIterSaver(
-                            oldExpression = item.oldExpression,
-                            resultSet = intersect(setOf(), setOf())
-                        )
+                    finalSet = when {
+                        item.oldExpression.contains(UNION) ->
+                            SetsIterSaver(
+                                oldExpression = item.oldExpression,
+                                resultSet = union(first, second)
+                            )
 
-                    item.oldExpression.contains(SUB_SET) ->
-                        SetsIterSaver(
-                            oldExpression = item.oldExpression,
-                            resultSet = subSet(setOf(), setOf())
-                        )
+                        item.oldExpression.contains(INTERCCION) ->
+                            SetsIterSaver(
+                                oldExpression = item.oldExpression,
+                                resultSet = intersect(first, second)
+                            )
 
-                    item.oldExpression.contains(DIFERENCIA) ->
-                        SetsIterSaver(
-                            oldExpression = item.oldExpression,
-                            resultSet = difference(first.set, second.set)
-                        )
+                        item.oldExpression.contains(SUB_SET) ->
+                            SetsIterSaver(
+                                oldExpression = item.oldExpression,
+                                resultSet = subSet(first, second)
+                            )
 
-                    /*
-                    * Complemento tendra un tratamiento diferente
-                    * */
+                        item.oldExpression.contains(DIFERENCIA) ->
+                            SetsIterSaver(
+                                oldExpression = item.oldExpression,
+                                resultSet = difference(first, second)
+                            )
 
-                    else -> SetsIterSaver()
+                        /*
+                        * Complemento tendra un tratamiento diferente
+                        * */
+
+                        else -> SetsIterSaver()
+                    }
+
+                    listToChechValues.add(finalSet)
+
+                } else {
+
+                    val iterated = simpleIter(item.oldExpression)
+                    val oldSet = finalSet.resultSet
+                    val nextExpression = entities.filter { it.keyName == iterated.last() }[0]
+
+                    finalSet = when {
+                        iterated.contains(UNION) ->
+                            SetsIterSaver(
+                                oldExpression = "( ${finalSet.oldExpression} ) ${item.oldExpression}",
+                                resultSet = union(oldSet, nextExpression.set)
+                            )
+
+                        iterated.contains(INTERCCION) ->
+                            SetsIterSaver(
+                                oldExpression = "( ${finalSet.oldExpression} ) ${item.oldExpression}",
+                                resultSet = intersect(oldSet, nextExpression.set)
+                            )
+
+                        iterated.contains(SUB_SET) ->
+                            SetsIterSaver(
+                                oldExpression = "( ${finalSet.oldExpression} ) ${item.oldExpression}",
+                                resultSet = subSet(oldSet, nextExpression.set)
+                            )
+
+                        iterated.contains(DIFERENCIA) ->
+                            SetsIterSaver(
+                                oldExpression = "( ${finalSet.oldExpression} ) ${item.oldExpression}",
+                                resultSet = difference(oldSet, nextExpression.set)
+                            )
+
+                        /*
+                        * Complemento tendra un tratamiento diferente
+                        * */
+
+                        else -> SetsIterSaver()
+                    }
+
+                    println(item.oldExpression)
+                    listToChechValues.add(finalSet)
                 }
-
-                listToChechValues.add(finalSet)
-
-            } else {
-
-                val iterated = simpleIter(item.oldExpression)
-                val oldSet = finalSet.resultSet
-                val nextExpression = entities.filter { it.keyName == iterated.last() }[0]
-
-                finalSet = when {
-                    iterated.contains(UNION) ->
-                        SetsIterSaver(
-                            oldExpression = finalSet.oldExpression + item.oldExpression,
-                            resultSet = union(oldSet, nextExpression.set)
-                        )
-
-                    iterated.contains(INTERCCION) ->
-                        SetsIterSaver(
-                            oldExpression = finalSet.oldExpression + item.oldExpression,
-                            resultSet = intersect(oldSet, nextExpression.set)
-                        )
-
-                    iterated.contains(SUB_SET) ->
-                        SetsIterSaver(
-                            oldExpression = finalSet.oldExpression + item.oldExpression,
-                            resultSet = subSet(oldSet, nextExpression.set)
-                        )
-
-                    iterated.contains(DIFERENCIA) ->
-                        SetsIterSaver(
-                            oldExpression = finalSet.oldExpression + item.oldExpression,
-                            resultSet = difference(oldSet, nextExpression.set)
-                        )
-
-                    /*
-                    * Complemento tendra un tratamiento diferente
-                    * */
-
-                    else -> SetsIterSaver()
-                }
-
-                println(item.oldExpression)
-                listToChechValues.add(finalSet)
             }
         }
 

@@ -71,6 +71,7 @@ import com.zhei.dapp.R
 import com.zhei.dapp.SUB_SET
 import com.zhei.dapp.UNION
 import com.zhei.dapp.data.models.SetsEntity
+import com.zhei.dapp.data.models.SetsIterSaver
 import com.zhei.dapp.data.repository.SetsRepository
 import com.zhei.dapp.ui.theme.YellowHead
 import com.zhei.dapp.ui.theme.YellowSeven
@@ -180,7 +181,8 @@ import com.zhei.dapp.view.viewmodels.SetsScreenViewModel
         Image(
             painter = painterResource(id = R.drawable.imgdapp1),
             contentDescription = "", 
-            modifier = Modifier.fillMaxSize()
+            modifier = Modifier
+                .fillMaxSize()
                 .scale(1.5f)
                 .alpha(0.04f)
         )
@@ -273,15 +275,86 @@ import com.zhei.dapp.view.viewmodels.SetsScreenViewModel
                 color = Color.Black
             )
 
-            if (resultSet.resultSet.isNotEmpty()) {
-                Text(
-                    text = "${resultSet.expression} = ${resultSet.resultSet}",
-                    fontFamily = MyFont.garamondMedium,
-                    fontSize = 21.sp,
-                    color = Color.Black
-                )
+            Spacer(modifier = Modifier.height(5.dp))
+
+            LazyColumForResponseSets(viewSets = viewSets)
+        }
+    }
+}
+
+
+@Composable fun LazyColumForResponseSets (
+    viewSets: SetsScreenViewModel
+) {
+    val listIterSaver by viewSets.listSetsIterSaver.collectAsState()
+
+    val c = listOf(SetsIterSaver("AUB", resultSet = setOf(3, 4, 6)),
+        SetsIterSaver("TnU", resultSet = setOf(8, 5, 688, 2))
+    )
+
+    LazyColumn (
+        modifier = Modifier
+            .fillMaxWidth()
+            .height(250.dp),
+        verticalArrangement = Arrangement.Top,
+        horizontalAlignment = Alignment.Start
+    ) {
+
+        itemsIndexed(listIterSaver, key = { i, itm -> "${itm.oldExpression}$i" }
+        ) { index, items ->
+
+            DesingForResponseSets(
+                index = index,
+                item = items,
+                list = listIterSaver
+            )
+        }
+    }
+}
+
+
+@Composable fun DesingForResponseSets (
+    index: Int,
+    list: List<SetsIterSaver>,
+    item: SetsIterSaver
+) {
+    Surface (
+        modifier = Modifier
+            .fillMaxWidth()
+            .height(50.dp),
+        color = Color.White,
+        shape = RoundedCornerShape(10.dp),
+        shadowElevation = 5.dp
+    ) {
+
+        Column (
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(start = 20.dp, end = 20.dp),
+            verticalArrangement = Arrangement.Center,
+            horizontalAlignment = Alignment.Start
+        ) {
+
+            LazyRow (
+                modifier = Modifier.fillMaxWidth(),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.Start
+            ) {
+
+                item {
+
+                    Text(
+                        text = "${item.oldExpression} = ${item.resultSet}",
+                        fontSize = 20.sp,
+                        fontFamily = MyFont.garamondMedium,
+                    )
+                }
             }
         }
+    }
+
+    if (index < list.size - 1) {
+        Spacer(modifier = Modifier.height(5.dp))
     }
 }
 
@@ -315,14 +388,9 @@ import com.zhei.dapp.view.viewmodels.SetsScreenViewModel
     item: SetsEntity
 ) {
 
-    val elements = remember { mutableStateListOf("", "", "", "", "") }
+    val elements = remember { mutableStateListOf("", "", "", "", "", "", "", "", "", "") }
 
     LaunchedEffect(Unit) {
-        /*viewSets.update(
-            keyName = item.keyName,
-            resultSet = elements.toSet()
-        )
-        viewSets.updateUniversalSet()*/
         snapshotFlow { elements.toList() }
             .collect { updateList ->
                 viewSets.update(
@@ -369,38 +437,87 @@ import com.zhei.dapp.view.viewmodels.SetsScreenViewModel
 
             Spacer(modifier = Modifier.width(10.dp))
 
-            TextFieldForPutSetElements(
-                onSendInfo = { elements[0] = it },
-                elements = elements
-            )
+            LazyRow (
+                modifier = Modifier.fillMaxWidth(),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.Start
+            ) {
 
-            CommaInter()
+                item {
 
-            TextFieldForPutSetElements(
-                onSendInfo = { elements[1] = it },
-                elements = elements
-            )
+                    TextFieldForPutSetElements(
+                        onSendInfo = { elements[0] = it },
+                        elements = elements
+                    )
 
-            CommaInter()
+                    CommaInter()
 
-            TextFieldForPutSetElements(
-                onSendInfo = { elements[2] = it },
-                elements = elements
-            )
+                    TextFieldForPutSetElements(
+                        onSendInfo = { elements[1] = it },
+                        elements = elements
+                    )
 
-            CommaInter()
+                    CommaInter()
 
-            TextFieldForPutSetElements(
-                onSendInfo = { elements[3] = it },
-                elements = elements
-            )
+                    TextFieldForPutSetElements(
+                        onSendInfo = { elements[2] = it },
+                        elements = elements
+                    )
 
-            CommaInter()
+                    CommaInter()
 
-            TextFieldForPutSetElements(
-                onSendInfo = { elements[4] = it },
-                elements = elements
-            )
+                    TextFieldForPutSetElements(
+                        onSendInfo = { elements[3] = it },
+                        elements = elements
+                    )
+
+                    CommaInter()
+
+                    TextFieldForPutSetElements(
+                        onSendInfo = { elements[4] = it },
+                        elements = elements
+                    )
+
+                    CommaInter()
+
+                    TextFieldForPutSetElements(
+                        onSendInfo = { elements[5] = it },
+                        elements = elements
+                    )
+
+                    CommaInter()
+
+                    TextFieldForPutSetElements(
+                        onSendInfo = { elements[6] = it },
+                        elements = elements
+                    )
+
+                    CommaInter()
+
+                    TextFieldForPutSetElements(
+                        onSendInfo = { elements[7] = it },
+                        elements = elements
+                    )
+
+                    CommaInter()
+
+                    TextFieldForPutSetElements(
+                        onSendInfo = { elements[8] = it },
+                        elements = elements
+                    )
+
+                    CommaInter()
+
+                    TextFieldForPutSetElements(
+                        onSendInfo = { elements[9] = it },
+                        elements = elements
+                    )
+                }
+            }
+
+
+
+
         }
     }
 }
@@ -835,7 +952,7 @@ import com.zhei.dapp.view.viewmodels.SetsScreenViewModel
 
             Text(
                 text = viewSets.fieldFormula.value,
-                fontSize = 14.sp,
+                fontSize = 16.sp,
                 fontFamily = MyFont.robotoRegular,
                 modifier = Modifier
                     .padding(start = 10.dp, end = 10.dp)
@@ -886,7 +1003,7 @@ import com.zhei.dapp.view.viewmodels.SetsScreenViewModel
             .border(1.dp, YellowHead, RoundedCornerShape(10.dp))
             .pointerInput(Unit) {
                 detectTapGestures {
-                    viewSets.getSimplexAnalizer()
+                    viewSets.generate()
                 }
             }
             .background(

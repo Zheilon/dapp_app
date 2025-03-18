@@ -9,6 +9,8 @@ interface ISetsRepository {
 
     fun rawPattern (expression: String, entities: List<SetsEntity>) : List<SetsIterSaver>
 
+    fun isSet (expresion: String) : Boolean
+
     fun splitSetsSimplex (expression: String, sets: List<SetsEntity>) : SetsResultsEntity
 
     fun union (a: Set<Any>, b: Set<Any>) : Set<Any>

@@ -8,10 +8,11 @@ import com.zhei.dapp.data.repository.TablesRepository
 fun main ()
 {
     val sets = listOf(
-        SetsEntity("A", setOf(2, 3, 5, 1, 7)),
-        SetsEntity("B", setOf(6, 7, 8, 1, 4)),
-        SetsEntity("C", setOf(1, 2, 3, 4, 5))
+        SetsEntity("A", setOf("t", "u", "ñ", 0, "d")),
+        SetsEntity("B", setOf("u", 0)),
+        SetsEntity("C", setOf("k", "n", "I", "I", "n"))
     )
-    val expresion = "A${DIFERENCIA}B${UNION}C${DIFERENCIA}A"
-    println(SetsRepository().rawPattern(expression = expresion, entities = sets))
+    val expresion = "[A${UNION}B]"
+    /*println(SetsRepository().rawPattern(expression = expresion, entities = sets))*/
+    println(SetsRepository().isSet(expresion))
 }

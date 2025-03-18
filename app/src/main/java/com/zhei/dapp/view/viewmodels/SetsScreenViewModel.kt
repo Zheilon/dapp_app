@@ -14,6 +14,7 @@ import com.zhei.dapp.INTERCCION
 import com.zhei.dapp.SUB_SET
 import com.zhei.dapp.UNION
 import com.zhei.dapp.data.models.SetsEntity
+import com.zhei.dapp.data.models.SetsIterSaver
 import com.zhei.dapp.data.models.SetsResultsEntity
 import com.zhei.dapp.data.repository.CommonActions
 import com.zhei.dapp.data.repository.SetsRepository
@@ -29,6 +30,9 @@ class SetsScreenViewModel : ViewModel() {
 
     private val _listSets = MutableStateFlow<List<SetsEntity>>(emptyList())
     val listSets: StateFlow<List<SetsEntity>> = _listSets
+
+    private val _listSetsIterSaver = MutableStateFlow<List<SetsIterSaver>>(emptyList())
+    val listSetsIterSaver: StateFlow<List<SetsIterSaver>> = _listSetsIterSaver
 
     private val _resultSet = MutableStateFlow(SetsResultsEntity())
     val resultSet: StateFlow<SetsResultsEntity> = _resultSet
@@ -130,5 +134,25 @@ class SetsScreenViewModel : ViewModel() {
             _universalSet.value = repositorySets.createUniversalSet(_listSets.value)
         }
     }
+
+
+    fun generate ()
+    {
+        viewModelScope.launch {
+            _listSetsIterSaver.value = repositorySets.rawPattern(
+                expression = _fieldFormula.value,
+                entities = _listSets.value
+            )
+        }
+    }
+
+
+
+
+
+
+
+
+
 
 }

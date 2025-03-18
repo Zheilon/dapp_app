@@ -12,7 +12,7 @@ fun main ()
         SetsEntity("B", setOf("u", 0)),
         SetsEntity("C", setOf("k", "n", "I", "I", "n"))
     )
-    val expresion = "[A${UNION}B]"
-    /*println(SetsRepository().rawPattern(expression = expresion, entities = sets))*/
-    println(SetsRepository().isSet(expresion))
+    val expresion = "R${CONJUNCION}P${NEGACION}Q"
+    println(TablesRepository().rawPattern(expresion))
+    println(TablesRepository().biconditional(0, 0))
 }

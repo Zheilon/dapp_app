@@ -24,3 +24,14 @@ const val DIFERENCIA = "-"
 const val SUB_SET = "⊆"
 const val COMPLEMENT = "′"
 /*------------------------------*/
+
+
+
+/*Used for Tables Main Screen*/
+/*------------------------------*/
+const val NEGACION = "¬"
+const val CONJUNCION = "∧"
+const val DISYUNCION = "∨"
+const val CONDICIONAL = "→"
+const val BICONDICIONAL = "↔"
+/*------------------------------*/

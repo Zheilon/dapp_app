@@ -1,5 +1,4 @@
 package com.zhei.dapp.data.repository
-import android.util.Log
 import com.zhei.dapp.COMPLEMENT
 import com.zhei.dapp.DIFERENCIA
 import com.zhei.dapp.INTERCCION
@@ -11,7 +10,6 @@ import com.zhei.dapp.data.models.SetsEntity
 import com.zhei.dapp.data.models.SetsIterSaver
 import com.zhei.dapp.data.models.SetsResultsEntity
 import com.zhei.dapp.domain.repository.ISetsRepository
-import kotlin.math.exp
 
 class SetsRepository : ISetsRepository {
 
@@ -130,7 +128,7 @@ class SetsRepository : ISetsRepository {
     }
 
 
-    override fun isSet(expresion: String): Boolean
+    override fun isSet(expresion: String, list: List<SetsEntity>): Boolean
     {
         var bool = false
 
@@ -139,7 +137,7 @@ class SetsRepository : ISetsRepository {
         }
 
         filtered.forEachIndexed { index, item ->
-            if (index % 2 == 1 && expresion.length % 2 == 1) {
+            if (index % 2 == 1 && expresion.length % 2 == 1 && list.isNotEmpty()) {
 
                 val charTrust = (item.toString() == UNION || item.toString() == INTERCCION ||
                         item.toString() == DIFERENCIA || item.toString() == SUB_SET || item.toString() == COMPLEMENT)
@@ -183,11 +181,11 @@ class SetsRepository : ISetsRepository {
 
         val listToSaveLazily = mutableListOf<SetsIterSaver>()
 
-        val listToChechValues = mutableListOf<SetsIterSaver>() /*Tiende a ser Retirada*/
+        val listToCheckValues = mutableListOf<SetsIterSaver>() /*Tiende a ser Retirada*/
 
         var finalSet = SetsIterSaver()
 
-        if (isSet(expression)) {
+        if (isSet(expression, entities)) {
             listSpecialChars.forEachIndexed { _, _ ->
                 iteredExpression.forEachIndexed { _, _ ->
                     val cuteFactor = if (iteredExpression.size % 2 == 0) 2 else 3
@@ -195,7 +193,7 @@ class SetsRepository : ISetsRepository {
                         listToSaveLazily.add(
                             SetsIterSaver(
                                 oldExpression = getParticularExpression(iteredExpression, cuteFactor),
-                                resultSet =  setOf()
+                                resultSet = setOf()
                             )
                         )
                         iteredExpression = iteredExpression.drop(cuteFactor)
@@ -205,14 +203,15 @@ class SetsRepository : ISetsRepository {
 
             listToSaveLazily.forEachIndexed { index, item ->
                 println("index: $index")
-
                 if (index == 0) {
                     val iterated = simpleIter(item.oldExpression)
                     println("iterated: $iterated")
 
-                    val first = entities.filter { it.keyName == iterated.first() }[0].set.filter { it != "" }.toSet()
-                    val second = entities.filter { it.keyName == iterated.last() }[0].set.filter { it != "" }.toSet()
+                    val first = entities.filter { it.keyName == iterated.first() }[0]
+                        .set.filter { it != "" }.toSet()
 
+                    val second = entities.filter { it.keyName == iterated.last() }[0]
+                        .set.filter { it != "" }.toSet()
 
                     finalSet = when {
                         item.oldExpression.contains(UNION) ->
@@ -246,7 +245,7 @@ class SetsRepository : ISetsRepository {
                         else -> SetsIterSaver()
                     }
 
-                    listToChechValues.add(finalSet)
+                    listToCheckValues.add(finalSet)
 
                 } else {
 
@@ -287,15 +286,15 @@ class SetsRepository : ISetsRepository {
                     }
 
                     println(item.oldExpression)
-                    listToChechValues.add(finalSet)
+                    listToCheckValues.add(finalSet)
                 }
             }
         }
 
         println("\n<------------- General ------------->\n$listToSaveLazily")
-        println("\n<------------- Checker ------------->\n$listToChechValues")
+        println("\n<------------- Checker ------------->\n$listToCheckValues")
         println("\n<------------- Final Set ------------->\n$finalSet\n")
-        return listToChechValues.toList()
+        return listToCheckValues.toList()
     }
 
 

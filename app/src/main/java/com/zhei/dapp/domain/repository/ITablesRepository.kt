@@ -1,5 +1,4 @@
 package com.zhei.dapp.domain.repository
-
 import com.zhei.dapp.data.models.TablesEntity
 import com.zhei.dapp.data.models.TablesIterSaver
 
@@ -23,10 +22,12 @@ interface ITablesRepository {
 
     fun generateTableStart (expression: String) : List<TablesEntity>
 
-    fun rawPattern (expression: String) : List<TablesIterSaver>
+    fun rawPattern (expression: String) : List<TablesEntity>
 
     fun extractVarsAlphabetOrder (expression: String) : List<String>
 
     fun getSpecialChars (expression: String) : List<String>
+
+    fun takeChar (list: List<String>) : String
 
 }

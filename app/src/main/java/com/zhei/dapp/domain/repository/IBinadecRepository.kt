@@ -1,10 +1,38 @@
 package com.zhei.dapp.domain.repository
 
+import com.zhei.dapp.data.models.BinadecsEntity
+
 interface IBinadecRepository {
 
 
-    fun fromDecimalToBinary(decimal: String): String
+    /*--------------------- From Decimal --------------------------*/
 
-    fun fromBinaryToDecimal (binary: String) : String
+    fun fromDecimalToBinary(decimal: String) : String
+
+    fun fromDecimalToOctal(decimal: String) : String
+
+    fun fromDecimalToHex(decimal: String) : String
+
+    /*--------------------- From Binary --------------------------*/
+
+    fun fromBinaryToDecimal(binary: String) : String
+
+    fun fromBinaryToOctal(binary: String) : String
+
+    fun fromBinaryToHexa(binary: String) : String
+
+    /*--------------------- From Hex --------------------------*/
+
+    fun fromHexToDecimal(hex: String) : String
+
+    fun fromHexToBinary(hex: String) : String
+
+    fun fromHexToOctal(hex: String) : String
+
+    fun isHex(hex: String) : Boolean
+
+    fun fromOneToGetAll(expression: String, isDecimal: Boolean) : List<BinadecsEntity>
+
+
 
 }

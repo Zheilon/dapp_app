@@ -1,4 +1,5 @@
 package com.zhei.dapp.data.repository
+import com.zhei.dapp.data.models.TablesEntity
 import com.zhei.dapp.domain.repository.ICommonActions
 
 open class CommonActions : ICommonActions {
@@ -38,11 +39,19 @@ open class CommonActions : ICommonActions {
                 c += item
             }
         }
+
         println("List Arrived: $list")
         println("Chars Cut: $c")
         println("Cut Factor: $indexDivide")
         println("<------------------------------->")
+
         return c
+    }
+
+
+    override fun <T> superOrderByDescending(item: List<T>) : List<T>
+    {
+        return List(item.size) { index -> item[(item.size - 1) - index] }
     }
 
 

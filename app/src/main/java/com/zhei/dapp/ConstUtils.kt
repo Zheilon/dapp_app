@@ -11,6 +11,9 @@ const val BINADEC = "binadec"
 /*------------------------------*/
 const val BINARY = "Binario"
 const val DECIMAL = "Decimal"
+const val OCTAL = "Octal"
+const val HEX = "Hex"
+const val COMPLEMENT_NUMBERS_2 = "Complement2"
 /*------------------------------*/
 
 
@@ -34,4 +37,13 @@ const val CONJUNCION = "∧"
 const val DISYUNCION = "∨"
 const val CONDICIONAL = "→"
 const val BICONDICIONAL = "↔"
+/*------------------------------*/
+
+
+
+/*Used for Tables Main Screen*/
+/*------------------------------*/
+const val PARENTESIS = "( )"
+const val CORCHETES = "[ ]"
+const val LLAVES = "{ }"
 /*------------------------------*/

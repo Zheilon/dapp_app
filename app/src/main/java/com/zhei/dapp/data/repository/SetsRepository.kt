@@ -110,7 +110,7 @@ class SetsRepository : ISetsRepository, CommonActions() {
     }
 
 
-    override fun isSet(expresion: String, list: List<SetsEntity>): Boolean
+    override fun isSetRaw(expresion: String, list: List<SetsEntity>): Boolean
     {
         var bool = false
 
@@ -167,7 +167,7 @@ class SetsRepository : ISetsRepository, CommonActions() {
 
         var finalSet = SetsIterSaver()
 
-        if (isSet(expression, entities)) {
+        if (isSetRaw(expression, entities)) {
             listSpecialChars.forEachIndexed { _, _ ->
                 iteredExpression.forEachIndexed { _, _ ->
                     val cuteFactor = if (iteredExpression.size % 2 == 0) 2 else 3

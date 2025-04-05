@@ -15,17 +15,25 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentHeight
+import androidx.compose.foundation.layout.wrapContentSize
+import androidx.compose.foundation.layout.wrapContentWidth
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowUpward
+import androidx.compose.material.icons.filled.AssignmentReturned
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Surface
@@ -33,9 +41,12 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
+import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.graphics.graphicsLayer
@@ -50,20 +61,28 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.zhei.dapp.BINARY
+import com.zhei.dapp.COMPLEMENT_NUMBERS_2
 import com.zhei.dapp.DECIMAL
+import com.zhei.dapp.HEX
 import com.zhei.dapp.MyFont
+import com.zhei.dapp.OCTAL
 import com.zhei.dapp.R
+import com.zhei.dapp.data.models.BinadecsEntity
 import com.zhei.dapp.view.ui.setsscreen.BackgroundImageSetsScreen
 import com.zhei.dapp.view.viewmodels.BinadecScreenViewModel
+
+
+/*Cambio de enfoque total, si es que voy a agregar
+* octal, hex, complemento 2*/
 
 
 @Preview
 @Composable fun BinadecScreen (
     viewBinadec: BinadecScreenViewModel = viewModel()
 ) {
-    viewBinadec.getResultTransform()
+    viewBinadec.executeTransform()
 
-    Log.e("truest", viewBinadec.onPressChangerArrows.toString())
+    Log.e("holaaaaa", viewBinadec.listTransforms.collectAsState().value.toString())
 
     Box(
         modifier = Modifier
@@ -74,7 +93,9 @@ import com.zhei.dapp.view.viewmodels.BinadecScreenViewModel
         ImageBackgroundBinadecScreen()
 
         Column(
-            modifier = Modifier.fillMaxSize()
+            modifier = Modifier.fillMaxSize(),
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.Top
         ) {
 
             HeaderTitleConverterBinadec(viewBinadec = viewBinadec)
@@ -83,21 +104,17 @@ import com.zhei.dapp.view.viewmodels.BinadecScreenViewModel
 
             TextFieldArea(viewBinadec = viewBinadec)
 
-            Spacer(modifier = Modifier.height(20.dp))
+            Spacer(modifier = Modifier.weight(1f))
 
             Surface (
-                modifier = Modifier
-                    .fillMaxSize(),
+                modifier = Modifier.wrapContentSize(),
                 color = Color.White,
-                shape = RoundedCornerShape(topStart = 250.dp),
+                shape = RoundedCornerShape(topStart = 20.dp, topEnd = 20.dp),
                 shadowElevation = 15.dp
             ) {
 
-                BackgroundImageSetsScreen()
-
-                SelectionAreaToConvertBinadec(viewBinadec = viewBinadec)
+                CustomeKeyBoardForBinadec(viewBinadec = viewBinadec)
             }
-
         }
     }
 }
@@ -113,12 +130,14 @@ import com.zhei.dapp.view.viewmodels.BinadecScreenViewModel
 }
 
 
-@Composable fun TitlePoweredBy ()
-{
+@Composable fun TitlePoweredBy (
+    viewBinadec: BinadecScreenViewModel
+) {
     Row (
         modifier = Modifier
             .fillMaxWidth()
-            .padding(start = 15.dp, top = 35.dp),
+            .height(65.dp)
+            .padding(start = 15.dp, top = 35.dp, end = 15.dp),
         horizontalArrangement = Arrangement.Start,
         verticalAlignment = Alignment.CenterVertically
     ) {
@@ -133,7 +152,49 @@ import com.zhei.dapp.view.viewmodels.BinadecScreenViewModel
             fontFamily = MyFont.robotoRegular,
             fontSize = 10.sp
         )
+
+        Spacer(modifier = Modifier.weight(1f))
+
+        ButtonForShowSumAndRest(viewBinadec = viewBinadec)
     }
+}
+
+
+@Composable fun ShowAreaForAnnuncementTransformNumb(
+    viewBinadec: BinadecScreenViewModel
+) {
+    Row (
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(start = 15.dp)
+            .heightIn(min = 5.dp, max = 200.dp),
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.Start
+    ) {
+        Text(
+            text = "Valor a transformar: ${viewBinadec.text.value}",
+            color = Color.White,
+            fontSize = 10.sp,
+            fontFamily = MyFont.robotoRegular,
+            lineHeight = 18.sp
+
+        )
+    }
+}
+
+
+@Composable fun ButtonForShowSumAndRest(
+    viewBinadec: BinadecScreenViewModel
+) {
+    if (viewBinadec.text.value.isNotEmpty()) {
+        Image(
+            imageVector = Icons.Default.AssignmentReturned,
+            contentDescription = "return",
+            colorFilter = ColorFilter.tint(Color.White),
+            modifier = Modifier.size(30.dp)
+        )
+    }
+
 }
 
 
@@ -167,38 +228,80 @@ import com.zhei.dapp.view.viewmodels.BinadecScreenViewModel
 @Composable fun HeaderTitleConverterBinadec (
     viewBinadec: BinadecScreenViewModel
 ) {
-    val onPressArrows by viewBinadec::onPressChangerArrows
 
     Surface (
         modifier = Modifier
             .fillMaxWidth()
             .height(400.dp),
         color = Color.Black,
-        shape = RoundedCornerShape(bottomStart = 0.dp, bottomEnd = 250.dp),
+        shape = RoundedCornerShape(bottomStart = 40.dp, bottomEnd = 40.dp),
         shadowElevation = 10.dp
     ) {
 
         Column (
             modifier = Modifier.fillMaxSize(),
-            verticalArrangement = Arrangement.SpaceBetween,
+            verticalArrangement = Arrangement.Top,
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
 
-            TitlePoweredBy()
+            TitlePoweredBy(viewBinadec = viewBinadec)
 
-            Spacer(modifier = Modifier.weight(1f))
-
-            Text(
-                text = if (onPressArrows) viewBinadec.binary.value else viewBinadec.decimal.value,
-                fontSize = 25.sp,
-                fontFamily = MyFont.soraSemibold, 
-                color = Color.White,
-                letterSpacing = 5.sp
-            )
-
-            Spacer(modifier = Modifier.weight(1f))
+            LazyColumnForShowTransforms(viewBinadec = viewBinadec)
         }
     }
+}
+
+
+@Composable fun LazyColumnForShowTransforms(viewBinadec: BinadecScreenViewModel)
+{
+    val originList by viewBinadec.listTransforms.collectAsState()
+
+    if (viewBinadec.text.value.isNotEmpty()) {
+        LazyColumn (
+            modifier = Modifier.fillMaxWidth(),
+            verticalArrangement = Arrangement.Top,
+            horizontalAlignment = Alignment.Start
+        ) {
+
+            items(originList, key = {it.type}) { item ->
+                CustomeVisualizerLazy(item = item)
+            }
+        }
+    }
+}
+
+
+@Composable fun CustomeVisualizerLazy(item: BinadecsEntity)
+{
+    Row (
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(start = 15.dp)
+            .heightIn(20.dp, max = 200.dp),
+        horizontalArrangement = Arrangement.Start,
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+
+        Text(
+            text = item.type.item,
+            fontSize = 15.sp,
+            fontFamily = MyFont.soraSemibold,
+            color = Color.White,
+            modifier = Modifier.padding(end = 10.dp)
+        )
+
+        Text(
+            text = item.resultOf,
+            fontSize = 15.sp,
+            fontFamily = MyFont.robotoRegular,
+            color = Color.White,
+            letterSpacing = 5.sp,
+            lineHeight = 15.sp,
+            modifier = Modifier.padding(end = 10.dp)
+        )
+    }
+
+    Spacer(modifier = Modifier.height(5.dp))
 }
 
 
@@ -218,22 +321,41 @@ import com.zhei.dapp.view.viewmodels.BinadecScreenViewModel
             modifier = Modifier
                 .fillMaxWidth()
                 .wrapContentHeight()
-                .padding(start = 30.dp, end = 30.dp),
+                .padding(start = 20.dp, end = 20.dp),
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.SpaceBetween
         ) {
+
+            CardForSelectConvertion(
+                toCalculus = DECIMAL,
+                viewBinadec = viewBinadec
+            )
+
+            Spacer(modifier = Modifier.weight(1f))
 
             CardForSelectConvertion(
                 toCalculus = BINARY,
                 viewBinadec = viewBinadec
             )
 
-            ImageToTurnActions(
+            Spacer(modifier = Modifier.weight(1f))
+
+            CardForSelectConvertion(
+                toCalculus = OCTAL,
                 viewBinadec = viewBinadec
             )
 
+            Spacer(modifier = Modifier.weight(1f))
+
             CardForSelectConvertion(
-                toCalculus = DECIMAL,
+                toCalculus = HEX,
+                viewBinadec = viewBinadec
+            )
+
+            Spacer(modifier = Modifier.weight(1f))
+
+            CardForSelectConvertion(
+                toCalculus = COMPLEMENT_NUMBERS_2,
                 viewBinadec = viewBinadec
             )
         }
@@ -245,64 +367,40 @@ import com.zhei.dapp.view.viewmodels.BinadecScreenViewModel
     toCalculus: String,
     viewBinadec: BinadecScreenViewModel
 ) {
-    val translation = when (toCalculus) {
-        DECIMAL -> -610f
-        BINARY -> 610f
-        else -> 0f
-    }
 
-    val animeTranslation = cardsAnimeFunctionTranslation(
-        toCalculus = toCalculus,
-        viewBinadec = viewBinadec,
-        translation = translation
-    )
+
 
     Card(
         modifier = Modifier
-            .height(50.dp)
-            .width(110.dp)
-            .graphicsLayer {
-                translationX = animeTranslation
+            .height(40.dp)
+            .wrapContentWidth()
+            .pointerInput(Unit) {
+                detectTapGestures {
+                    when (toCalculus) {
+                        DECIMAL -> viewBinadec.updateOnPressDecimal()
+                        BINARY -> viewBinadec.updateOnPressBinary()
+                    }
+                }
             },
-        colors = CardDefaults.cardColors(Color.Black)
+        colors = CardDefaults.cardColors(Color.Black),
+        shape = RoundedCornerShape(10.dp)
     ) {
 
         Column (
-            modifier = Modifier.fillMaxSize(),
+            modifier = Modifier.fillMaxHeight(),
             verticalArrangement = Arrangement.Center,
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
 
             Text(
                 text = toCalculus,
-                fontSize = 17.sp,
+                fontSize = 10.sp,
                 fontFamily = MyFont.soraSemibold,
-                color = Color.White
+                color = Color.White,
+                modifier = Modifier.padding(start = 10.dp, end = 10.dp)
             )
         }
     }
-}
-
-
-@Composable fun cardsAnimeFunctionTranslation (
-    toCalculus: String,
-    viewBinadec: BinadecScreenViewModel,
-    translation: Float
-) : Float
-{
-    val onPressArrows by viewBinadec::onPressChangerArrows
-
-    return when (toCalculus) {
-        DECIMAL -> animateFloatAsState(
-            targetValue = if (onPressArrows) translation else 0f,
-            animationSpec = tween(500), label = "")
-
-        BINARY -> animateFloatAsState(
-            targetValue = if (onPressArrows) translation else 0f,
-            animationSpec = tween(500), label = "")
-
-        else -> animateFloatAsState(targetValue = 0f, label = "")
-    }.value
 }
 
 
@@ -328,8 +426,12 @@ import com.zhei.dapp.view.viewmodels.BinadecScreenViewModel
                 focusedIndicatorColor = Color.Transparent,
                 unfocusedIndicatorColor = Color.Transparent,
                 focusedTextColor = Color.White,
-                unfocusedTextColor = Color.White
+                unfocusedTextColor = Color.White,
+                disabledIndicatorColor = Color.Transparent,
+                disabledTextColor = Color.White,
+                disabledContainerColor = Color.Transparent
             ),
+            enabled = false,
             textStyle = TextStyle(
                 fontSize = 17.sp,
                 fontFamily = MyFont.robotoRegular,
@@ -345,59 +447,3 @@ import com.zhei.dapp.view.viewmodels.BinadecScreenViewModel
         )
     }
 }
-
-
-@Composable fun ImageToTurnActions (
-    viewBinadec: BinadecScreenViewModel
-) {
-    val onPressArrows by viewBinadec::onPressChangerArrows
-
-    val animeRotate by animateFloatAsState(
-        targetValue = if (onPressArrows) 360f else 0f,
-        animationSpec = tween(400), label = "")
-
-    Column (
-        modifier = Modifier
-            .height(60.dp)
-            .width(50.dp)
-            .graphicsLayer {
-                rotationZ = animeRotate
-            }
-            .pointerInput(Unit) {
-                detectTapGestures {
-                    viewBinadec.updateChangerArrows(!onPressArrows)
-                }
-            }
-            .background(Color.Black, RoundedCornerShape(10.dp)),
-        verticalArrangement = Arrangement.Center,
-        horizontalAlignment = Alignment.CenterHorizontally
-    ) {
-
-        Image(
-            imageVector = Icons.Default.ArrowUpward,
-            contentDescription = "",
-            modifier = Modifier
-                .graphicsLayer {
-                    rotationZ = 90f
-                },
-            colorFilter = ColorFilter.tint(Color.White)
-        )
-
-        Image(
-            imageVector = Icons.Default.ArrowUpward,
-            contentDescription = "",
-            modifier = Modifier
-                .graphicsLayer {
-                    rotationZ = -90f
-                },
-            colorFilter = ColorFilter.tint(Color.White)
-        )
-    }
-}
-
-
-
-
-
-
-

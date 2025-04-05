@@ -10,4 +10,6 @@ interface ICommonActions {
 
     fun getParticularExpression(list: List<Char>, indexDivide: Int): String
 
+    fun <T> superOrderByDescending (item: List<T>): List<T>
+
 }

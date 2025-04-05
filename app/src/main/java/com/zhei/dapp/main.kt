@@ -12,7 +12,7 @@ fun main ()
         SetsEntity("B", setOf("u", 0)),
         SetsEntity("C", setOf("k", "n", "I", "I", "n"))
     )
-    val expresion = "${NEGACION}Ñ${BICONDICIONAL}R${DISYUNCION}P"
+    val expresion = "${NEGACION}A${CONDICIONAL}W${DISYUNCION}R"
     println(TablesRepository().rawPattern(expresion))
     println(TablesRepository().negation(0))
 }

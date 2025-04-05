@@ -21,6 +21,8 @@ import com.zhei.dapp.data.repository.SetsRepository
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asSharedFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 
 class SetsScreenViewModel : ViewModel() {
@@ -29,19 +31,19 @@ class SetsScreenViewModel : ViewModel() {
     private val repositoryCommon = CommonActions()
 
     private val _listSets = MutableStateFlow<List<SetsEntity>>(emptyList())
-    val listSets: StateFlow<List<SetsEntity>> = _listSets
+    val listSets: StateFlow<List<SetsEntity>> = _listSets.asStateFlow()
 
     private val _listSetsIterSaver = MutableStateFlow<List<SetsIterSaver>>(emptyList())
-    val listSetsIterSaver: StateFlow<List<SetsIterSaver>> = _listSetsIterSaver
+    val listSetsIterSaver: StateFlow<List<SetsIterSaver>> = _listSetsIterSaver.asStateFlow()
 
     private val _resultSet = MutableStateFlow(SetsResultsEntity())
-    val resultSet: StateFlow<SetsResultsEntity> = _resultSet
+    val resultSet: StateFlow<SetsResultsEntity> = _resultSet.asStateFlow()
 
     private val _fieldFormula = mutableStateOf("")
     val fieldFormula: State<String> = _fieldFormula
 
     private val _universalSet = MutableStateFlow<Set<Any>>(emptySet())
-    val universalSet: StateFlow<Set<Any>> = _universalSet
+    val universalSet: StateFlow<Set<Any>> = _universalSet.asStateFlow()
 
     fun create ()
     {
@@ -51,6 +53,9 @@ class SetsScreenViewModel : ViewModel() {
                     SetsEntity(repositorySets.createKeyName(_listSets.value), emptySet())
                 )
             }
+            /*Opción!
+            _listSets.update { it + listOf(SetsEntity(repositorySets.createKeyName(_listSets.value))) }
+            */
             else _listSets.value += listOf(SetsEntity(repositorySets.createKeyName(_listSets.value)))
         }
     }
@@ -89,6 +94,7 @@ class SetsScreenViewModel : ViewModel() {
     fun addComplement () { _fieldFormula.value += COMPLEMENT }
 
     fun deleteLastOnField () { _fieldFormula.value = _fieldFormula.value.dropLast(1) }
+
 
     fun addCorcheteWith ()
     {

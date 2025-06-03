@@ -111,7 +111,6 @@ class TablesRepository : ITablesRepository, CommonActions() {
 
             CONDICIONAL ->
                 oldList.zip(currentList) { old, current ->
-
                     /*Hice un cambio: antes estaba: old, current*/
                     conditional(current, old)
                 }

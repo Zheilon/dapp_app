@@ -1,6 +1,7 @@
 package com.zhei.dapp.view.ui.binadecscreen
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -20,6 +21,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.input.pointer.pointerInput
@@ -28,6 +30,9 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.zhei.dapp.MyFont
+import com.zhei.dapp.ui.theme.ORANGE_ONE
+import com.zhei.dapp.ui.theme.ORANGE_TWO
+import com.zhei.dapp.ui.theme.RedFour
 import com.zhei.dapp.view.viewmodels.BinadecScreenViewModel
 
 
@@ -42,6 +47,10 @@ import com.zhei.dapp.view.viewmodels.BinadecScreenViewModel
         verticalArrangement = Arrangement.Top,
         horizontalAlignment = Alignment.Start
     ) {
+
+        ClipForIsDecimal(viewBinadec = viewBinadec)
+
+        Spacer(modifier = Modifier.height(10.dp))
 
         Row (
             modifier = Modifier.fillMaxWidth()
@@ -163,7 +172,9 @@ import com.zhei.dapp.view.viewmodels.BinadecScreenViewModel
         modifier = Modifier
             .height(40.dp)
             .width(60.dp)
-            .background(Color.Black, RoundedCornerShape(5.dp))
+            .shadow(8.dp)
+            .background(ORANGE_ONE, RoundedCornerShape(5.dp))
+            .border(1.dp, ORANGE_ONE, RoundedCornerShape(5.dp))
             .pointerInput(Unit) {
                 detectTapGestures {
                     when (number) {
@@ -191,7 +202,7 @@ import com.zhei.dapp.view.viewmodels.BinadecScreenViewModel
                 text = number.toString(),
                 fontFamily = MyFont.soraSemibold,
                 fontSize = 14.sp,
-                color = Color.White
+                color = Color.Black
             )
         }
     }
@@ -204,7 +215,7 @@ import com.zhei.dapp.view.viewmodels.BinadecScreenViewModel
         modifier = Modifier
             .height(40.dp)
             .fillMaxWidth()
-            .background(Color.Black, RoundedCornerShape(5.dp))
+            .background(ORANGE_ONE, RoundedCornerShape(5.dp))
             .pointerInput(Unit) {
                 detectTapGestures {
                     when (number) {
@@ -224,7 +235,7 @@ import com.zhei.dapp.view.viewmodels.BinadecScreenViewModel
                 text = number.toString(),
                 fontFamily = MyFont.soraSemibold,
                 fontSize = 14.sp,
-                color = Color.White
+                color = Color.Black
             )
         }
     }
@@ -237,7 +248,7 @@ import com.zhei.dapp.view.viewmodels.BinadecScreenViewModel
         modifier = Modifier
             .height(40.dp)
             .width(60.dp)
-            .background(Color.Black, RoundedCornerShape(5.dp))
+            .background(ORANGE_ONE, RoundedCornerShape(5.dp))
             .pointerInput(Unit) {
                 detectTapGestures {
                     when (letter) {
@@ -262,7 +273,7 @@ import com.zhei.dapp.view.viewmodels.BinadecScreenViewModel
                 text = letter,
                 fontFamily = MyFont.soraSemibold,
                 fontSize = 14.sp,
-                color = Color.White
+                color = Color.Black
             )
         }
     }
@@ -275,7 +286,7 @@ import com.zhei.dapp.view.viewmodels.BinadecScreenViewModel
         modifier = Modifier
             .height(40.dp)
             .fillMaxWidth()
-            .background(Color.Black, RoundedCornerShape(5.dp))
+            .background(RedFour, RoundedCornerShape(5.dp))
             .pointerInput(Unit) {
                 detectTapGestures {
                     viewBinadec.deleteText()

@@ -9,6 +9,7 @@ import androidx.compose.animation.core.rememberInfiniteTransition
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -60,6 +61,8 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.navigation.NavHostController
+import androidx.navigation.compose.rememberNavController
 import com.zhei.dapp.BINARY
 import com.zhei.dapp.COMPLEMENT_NUMBERS_2
 import com.zhei.dapp.DECIMAL
@@ -68,6 +71,8 @@ import com.zhei.dapp.MyFont
 import com.zhei.dapp.OCTAL
 import com.zhei.dapp.R
 import com.zhei.dapp.data.models.BinadecsEntity
+import com.zhei.dapp.ui.theme.BLACK_TWO
+import com.zhei.dapp.view.Screens
 import com.zhei.dapp.view.ui.setsscreen.BackgroundImageSetsScreen
 import com.zhei.dapp.view.viewmodels.BinadecScreenViewModel
 
@@ -78,16 +83,15 @@ import com.zhei.dapp.view.viewmodels.BinadecScreenViewModel
 
 @Preview
 @Composable fun BinadecScreen (
+    navHost: NavHostController = rememberNavController(),
     viewBinadec: BinadecScreenViewModel = viewModel()
 ) {
     viewBinadec.executeTransform()
 
-    Log.e("holaaaaa", viewBinadec.listTransforms.collectAsState().value.toString())
-
     Box(
         modifier = Modifier
             .fillMaxSize()
-            .background(Color.White)
+            .background(BLACK_TWO)
     ) {
 
         ImageBackgroundBinadecScreen()
@@ -98,7 +102,10 @@ import com.zhei.dapp.view.viewmodels.BinadecScreenViewModel
             verticalArrangement = Arrangement.Top
         ) {
 
-            HeaderTitleConverterBinadec(viewBinadec = viewBinadec)
+            HeaderTitleConverterBinadec(
+                navHost = navHost,
+                viewBinadec = viewBinadec
+            )
 
             Spacer(modifier = Modifier.height(20.dp))
 
@@ -106,11 +113,11 @@ import com.zhei.dapp.view.viewmodels.BinadecScreenViewModel
 
             Spacer(modifier = Modifier.weight(1f))
 
-            Surface (
-                modifier = Modifier.wrapContentSize(),
-                color = Color.White,
-                shape = RoundedCornerShape(topStart = 20.dp, topEnd = 20.dp),
-                shadowElevation = 15.dp
+            Box (
+                modifier = Modifier
+                    .wrapContentSize()
+                    .alpha(0.8f)
+                    .background(Color.Black, RoundedCornerShape(topStart = 20.dp, topEnd = 20.dp))
             ) {
 
                 CustomeKeyBoardForBinadec(viewBinadec = viewBinadec)
@@ -123,14 +130,17 @@ import com.zhei.dapp.view.viewmodels.BinadecScreenViewModel
 @Composable fun ImageBackgroundBinadecScreen ()
 {
     Image(
-        painter = painterResource(id = R.drawable.dapp2),
+        painter = painterResource(id = R.drawable.imgdapp1),
         contentDescription = "snake",
-        modifier = Modifier.fillMaxSize()
+        modifier = Modifier
+            .fillMaxSize()
+            .alpha(0.09f)
     )
 }
 
 
 @Composable fun TitlePoweredBy (
+    navHost: NavHostController,
     viewBinadec: BinadecScreenViewModel
 ) {
     Row (
@@ -155,7 +165,10 @@ import com.zhei.dapp.view.viewmodels.BinadecScreenViewModel
 
         Spacer(modifier = Modifier.weight(1f))
 
-        ButtonForShowSumAndRest(viewBinadec = viewBinadec)
+        ButtonForShowSumAndRest(
+            navHost = navHost,
+            viewBinadec = viewBinadec
+        )
     }
 }
 
@@ -184,6 +197,7 @@ import com.zhei.dapp.view.viewmodels.BinadecScreenViewModel
 
 
 @Composable fun ButtonForShowSumAndRest(
+    navHost: NavHostController,
     viewBinadec: BinadecScreenViewModel
 ) {
     if (viewBinadec.text.value.isNotEmpty()) {
@@ -192,9 +206,9 @@ import com.zhei.dapp.view.viewmodels.BinadecScreenViewModel
             contentDescription = "return",
             colorFilter = ColorFilter.tint(Color.White),
             modifier = Modifier.size(30.dp)
+                .clickable { navHost.navigate(Screens.TransformsScreen) }
         )
     }
-
 }
 
 
@@ -226,6 +240,7 @@ import com.zhei.dapp.view.viewmodels.BinadecScreenViewModel
 
 
 @Composable fun HeaderTitleConverterBinadec (
+    navHost: NavHostController,
     viewBinadec: BinadecScreenViewModel
 ) {
 
@@ -244,7 +259,10 @@ import com.zhei.dapp.view.viewmodels.BinadecScreenViewModel
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
 
-            TitlePoweredBy(viewBinadec = viewBinadec)
+            TitlePoweredBy(
+                navHost = navHost,
+                viewBinadec = viewBinadec
+            )
 
             LazyColumnForShowTransforms(viewBinadec = viewBinadec)
         }
@@ -302,105 +320,6 @@ import com.zhei.dapp.view.viewmodels.BinadecScreenViewModel
     }
 
     Spacer(modifier = Modifier.height(5.dp))
-}
-
-
-@Composable fun SelectionAreaToConvertBinadec (
-    viewBinadec: BinadecScreenViewModel
-) {
-    Column (
-        modifier = Modifier
-            .fillMaxSize()
-            .imePadding()
-            .padding(bottom = 20.dp),
-        verticalArrangement = Arrangement.Bottom,
-        horizontalAlignment = Alignment.CenterHorizontally
-    ) {
-
-        Row (
-            modifier = Modifier
-                .fillMaxWidth()
-                .wrapContentHeight()
-                .padding(start = 20.dp, end = 20.dp),
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.SpaceBetween
-        ) {
-
-            CardForSelectConvertion(
-                toCalculus = DECIMAL,
-                viewBinadec = viewBinadec
-            )
-
-            Spacer(modifier = Modifier.weight(1f))
-
-            CardForSelectConvertion(
-                toCalculus = BINARY,
-                viewBinadec = viewBinadec
-            )
-
-            Spacer(modifier = Modifier.weight(1f))
-
-            CardForSelectConvertion(
-                toCalculus = OCTAL,
-                viewBinadec = viewBinadec
-            )
-
-            Spacer(modifier = Modifier.weight(1f))
-
-            CardForSelectConvertion(
-                toCalculus = HEX,
-                viewBinadec = viewBinadec
-            )
-
-            Spacer(modifier = Modifier.weight(1f))
-
-            CardForSelectConvertion(
-                toCalculus = COMPLEMENT_NUMBERS_2,
-                viewBinadec = viewBinadec
-            )
-        }
-    }
-}
-
-
-@Composable fun CardForSelectConvertion (
-    toCalculus: String,
-    viewBinadec: BinadecScreenViewModel
-) {
-
-
-
-    Card(
-        modifier = Modifier
-            .height(40.dp)
-            .wrapContentWidth()
-            .pointerInput(Unit) {
-                detectTapGestures {
-                    when (toCalculus) {
-                        DECIMAL -> viewBinadec.updateOnPressDecimal()
-                        BINARY -> viewBinadec.updateOnPressBinary()
-                    }
-                }
-            },
-        colors = CardDefaults.cardColors(Color.Black),
-        shape = RoundedCornerShape(10.dp)
-    ) {
-
-        Column (
-            modifier = Modifier.fillMaxHeight(),
-            verticalArrangement = Arrangement.Center,
-            horizontalAlignment = Alignment.CenterHorizontally
-        ) {
-
-            Text(
-                text = toCalculus,
-                fontSize = 10.sp,
-                fontFamily = MyFont.soraSemibold,
-                color = Color.White,
-                modifier = Modifier.padding(start = 10.dp, end = 10.dp)
-            )
-        }
-    }
 }
 
 

@@ -11,4 +11,6 @@ import kotlinx.serialization.Serializable
 
     @Serializable data object BinadecScreen : Screens()
 
+    @Serializable data object TransformsScreen : Screens()
+
 }

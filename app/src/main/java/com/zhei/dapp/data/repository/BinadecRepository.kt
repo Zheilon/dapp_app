@@ -1,7 +1,10 @@
 package com.zhei.dapp.data.repository
 import com.zhei.dapp.data.models.BinadecsClasses
 import com.zhei.dapp.data.models.BinadecsEntity
+import com.zhei.dapp.data.models.TransformsBEntity
 import com.zhei.dapp.domain.repository.IBinadecRepository
+import java.math.BigInteger
+import kotlin.math.exp
 
 
 class BinadecRepository : IBinadecRepository {
@@ -30,36 +33,31 @@ class BinadecRepository : IBinadecRepository {
 
     override fun fromDecimalToBinary(decimal: String): String
     {
-        return if (decimal.isNotEmpty())
-            decimal.toBigInteger().toString(2) else ""
+        return if (decimal.isNotEmpty()) decimal.toBigInteger().toString(2) else ""
     }
 
 
     override fun fromDecimalToOctal(decimal: String): String
     {
-        return if (decimal.isNotEmpty())
-            decimal.toBigInteger().toString(8) else ""
+        return if (decimal.isNotEmpty()) decimal.toBigInteger().toString(8) else ""
     }
 
 
     override fun fromDecimalToHex(decimal: String): String
     {
-        return if (decimal.isNotEmpty())
-            decimal.toBigInteger().toString(16) else ""
+        return if (decimal.isNotEmpty()) decimal.toBigInteger().toString(16) else ""
     }
 
 
     override fun fromHexToDecimal(hex: String): String
     {
-        return if (hex.isNotEmpty())
-            hex.toBigInteger(16).toString(10) else ""
+        return if (hex.isNotEmpty()) hex.toBigInteger(16).toString(10) else ""
     }
 
 
     override fun fromHexToOctal(hex: String): String
     {
-        return if (hex.isNotEmpty())
-            hex.toBigInteger(16).toString(8) else ""
+        return if (hex.isNotEmpty()) hex.toBigInteger(16).toString(8) else ""
     }
 
 
@@ -67,6 +65,12 @@ class BinadecRepository : IBinadecRepository {
     {
         return if (hex.isNotEmpty())
         hex.toBigInteger(16).toString(2) else ""
+    }
+
+
+    override fun isBinary(binary: String): Boolean
+    {
+        return binary.all { it == '0' || it == '1' }
     }
 
 
@@ -104,7 +108,7 @@ class BinadecRepository : IBinadecRepository {
         }
 
         /*i put here isDecimal like: !isDecimal*/
-        if (expression.all { it == '1' || it == '0' }) {
+        if (expression.all { it == '1' || it == '0' } && !isDecimal) {
             (0..2).forEach {
                 result.add(
                     when (it) {
@@ -124,10 +128,9 @@ class BinadecRepository : IBinadecRepository {
                     }
                 )
             }
-
         }
 
-        if (!expression.all { it == '1' || it == '0' } && !isHex(expression)) {
+        if ((!expression.all { it == '1' || it == '0' } || isDecimal) && !isHex(expression)) {
             (0..2).forEach {
                 result.add(
                     when (it) {
@@ -151,12 +154,32 @@ class BinadecRepository : IBinadecRepository {
 
         return result.toList()
     }
+    
 
+    override fun getTransformWithSum(expression: String): List<TransformsBEntity>
+    {
+        val list = mutableListOf<TransformsBEntity>()
 
+        if (expression.toBigIntegerOrNull() != null) {
+            val exp = 70
+            var exprInt = if (expression.isNotEmpty()) expression.toBigInteger() else BigInteger("0")
+            val square: (Int) -> BigInteger = { BigInteger("2").pow(it) }
 
+            (exp downTo 0).forEach { sqr ->
+                val squared = square(sqr)
+                if (exprInt >= squared) {
+                    list.add(TransformsBEntity(
+                        elevateExp = sqr.toString(),
+                        result = "$exprInt - $squared = ${exprInt - squared}")
+                    )
+                    exprInt -= squared
+                }
+            }
+        }
 
+        if (isBinary(expression)) { return emptyList() }
 
-
-
+        return list
+    }
 
 }

@@ -1,18 +1,16 @@
 package com.zhei.dapp
-
-import com.zhei.dapp.data.models.SetsEntity
-import com.zhei.dapp.data.repository.CommonActions
-import com.zhei.dapp.data.repository.SetsRepository
-import com.zhei.dapp.data.repository.TablesRepository
+import kotlin.math.abs
 
 fun main ()
 {
-    val sets = listOf(
-        SetsEntity("A", setOf("t", "u", "ñ", 0, "d")),
-        SetsEntity("B", setOf("u", 0)),
-        SetsEntity("C", setOf("k", "n", "I", "I", "n"))
-    )
-    val expresion = "${NEGACION}A${CONDICIONAL}W${DISYUNCION}R"
-    println(TablesRepository().rawPattern(expresion))
-    println(TablesRepository().negation(0))
+    decodeAlien("BA")
+}
+
+fun decodeAlien(value: String): Int
+{
+    var sum = 0
+    val language: () -> Unit = { println("Print!") }
+    val abcMap = (97..122).map { mapOf(Char(it).toString().lowercase() to abs(97 - it)) }
+    val valueSplit = value.map { it.toString().lowercase() }
+    return 0
 }

@@ -17,7 +17,12 @@ val RedFour = Color(0xFFff0000)
 val BackgroundSell = Color(0xFFFF3333)
 val RedFive = Color(0xFFffcece)
 
-val OrangeOne = Color(0xFFffe4a4)
+val BLACK_ONE = Color(0xFF2d2d2d)
+val BLACK_TWO = Color(0xFF1f1f1f)
+val BLACK_THREE = Color(0xFF101010)
+
+val ORANGE_ONE = Color(0xFFffe4a4)
+val ORANGE_TWO = Color(0xffee8500)
 
 val TextFieldSell = Color(0xFFFFF6A7)
 val YellowHead = Color(0xFFFFDD33)

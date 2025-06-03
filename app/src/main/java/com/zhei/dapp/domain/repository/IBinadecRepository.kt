@@ -1,6 +1,7 @@
 package com.zhei.dapp.domain.repository
 
 import com.zhei.dapp.data.models.BinadecsEntity
+import com.zhei.dapp.data.models.TransformsBEntity
 
 interface IBinadecRepository {
 
@@ -31,8 +32,10 @@ interface IBinadecRepository {
 
     fun isHex(hex: String) : Boolean
 
+    fun isBinary(binary: String) : Boolean
+
     fun fromOneToGetAll(expression: String, isDecimal: Boolean) : List<BinadecsEntity>
 
-
+    fun getTransformWithSum(expression: String) : List<TransformsBEntity>
 
 }

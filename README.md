@@ -9,6 +9,8 @@ Operaciones de conjuntos, Operaciones con operadores lógicos y transformaciones
 
 ![Home](app/assets/first_dapp_redim.jpg)
 ![Operadores Logicos](app/assets/second_dapp.jpg)
+![Conjuntos](app/assets/three_app.jpg)
+![Binadec](app/assets/four_dapp.jpg)
 
 
 ## Features
@@ -21,7 +23,7 @@ Operaciones de conjuntos, Operaciones con operadores lógicos y transformaciones
 
 - ***Ejecuta operaciones con operadores lógicos que contengan:*** [ Negación, Conjunción, Disyunción, Condicional, Bicondicional ]
 
-- ***Transformación númerica:*** Permite la Transformación de un número. Decimal a: [ Binario, Octal, Hexadecimal ]. Binario a: [ Decimal, Octal, Hexadecimal ]. Octal a: [ Binario, Decimal, Hexadecimal ]. Hexadecimal a: [ Binario, Octal, Decimal ]
+- ***Transformación númerica:*** Permite la Transformación de un número. Decimal a: [ Binario, Octal, Hexadecimal ]. Binario a: [ Decimal, Octal, Hexadecimal ]. Hexadecimal a: [ Binario, Octal, Decimal ]
 
 ## Authors
 

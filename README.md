@@ -7,7 +7,8 @@ Operaciones de conjuntos, Operaciones con operadores lógicos y transformaciones
 
 ## Screenshots
 
-![App Screenshot](app/assets/first_dapp.jpg)
+![Home](app/assets/first_dapp.jpg)
+![Operadores Logicos](app/assets/second_dapp.jpg)
 
 
 ## Features

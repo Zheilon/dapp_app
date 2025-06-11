@@ -10,7 +10,7 @@ Operaciones de conjuntos, Operaciones con operadores lógicos y transformaciones
 ![Home](app/assets/first_dapp_redim.jpg)
 ![Operadores Logicos](app/assets/second_dapp.jpg)
 ![Conjuntos](app/assets/three_app.jpg)
-![Decimal](app/assets/four_dapp.jpg)
+![Final](app/assets/four_dapp.jpg)
 
 
 ## Features
